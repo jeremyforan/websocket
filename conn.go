@@ -10,6 +10,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"io"
+	"log/slog"
 	"net"
 	"strconv"
 	"strings"
@@ -787,6 +788,8 @@ func (c *Conn) WriteMessage(messageType int, data []byte) error {
 		return mw.flushFrame(true, data)
 	}
 
+	slog.Info("WriteMessage", "type", messageType, "payload", string(data))
+
 	w, err := c.NextWriter(messageType)
 	if err != nil {
 		return err
@@ -1122,6 +1125,9 @@ func (c *Conn) ReadMessage() (messageType int, p []byte, err error) {
 		return messageType, nil, err
 	}
 	p, err = io.ReadAll(r)
+
+	slog.Info("ReadMessage", "type", messageType, "payload", string(p), "error", err)
+
 	return messageType, p, err
 }
 
